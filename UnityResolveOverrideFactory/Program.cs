@@ -25,6 +25,7 @@ namespace UnityResolveOverrideFactory
     {
         static void ExplicitRegistrations(IUnityContainer container)
         {
+            Console.WriteLine("Applying explicit registrations");
             container
                 .RegisterType<IFoo, Foo>()
                 .RegisterType<IBar, Bar>()
@@ -34,11 +35,27 @@ namespace UnityResolveOverrideFactory
                 );
         }
 
+        static void FluentRegistrations(IUnityContainer container)
+        {
+            Console.WriteLine("Applying fluent registrations");
+            container
+                .RegisterType<IFoo, Foo>()
+                .RegisterType<IBar, Bar>()
+                .Register(new CustomFactory<SpecialFooUser>().DependencyOverride<IFoo, SpecialFoo>());
+        }
+
         static void Main(string[] args)
         {
             Console.OutputEncoding = Encoding.UTF8;
             var container = new UnityContainer();
-            ExplicitRegistrations(container);
+            if (args.Length > 0 && args[0] == "-e")
+            {
+                ExplicitRegistrations(container);
+            }
+            else
+            {
+                FluentRegistrations(container);
+            }
 
             container.Resolve<FooUser>();
             container.Resolve<SpecialFooUser>();
