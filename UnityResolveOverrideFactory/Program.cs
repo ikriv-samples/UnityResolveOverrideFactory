@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text;
 using Unity;
+using Unity.Resolution;
 
 namespace UnityResolveOverrideFactory
 {
@@ -27,7 +28,10 @@ namespace UnityResolveOverrideFactory
             container
                 .RegisterType<IFoo, Foo>()
                 .RegisterType<IBar, Bar>()
-                .RegisterFactory<SpecialFooUser>(c => new SpecialFooUser(c.Resolve<SpecialFoo>(), c.Resolve<IBar>()));
+                .RegisterType<SpecialFooUser>("stdreg")
+                .RegisterFactory<SpecialFooUser>(
+                    c => c.Resolve<SpecialFooUser>("stdreg", new DependencyOverride<IFoo>(c.Resolve<SpecialFoo>()))
+                );
         }
 
         static void Main(string[] args)
